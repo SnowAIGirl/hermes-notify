@@ -195,7 +195,11 @@ def main():
     # type exact match, single trigger
     best = pick_best_rule(text, msg_type, callbacks)
     if best:
-        run_callback(best, msg)
+        if best.get("print"):
+            from_ep = msg.get("from", "?")
+            print(f"[{from_ep}] {text}")
+        if best.get("command"):
+            run_callback(best, msg)
 
 
 if __name__ == "__main__":
