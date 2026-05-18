@@ -18,7 +18,7 @@ from hermes_bus.client import send_message
 def _resolve_sender_name(override: str = None, config: dict = None) -> str:
     if override:
         return override
-    aliases = (config or {}).get("session_aliases", {})
+    role_map = (config or {}).get("role_map", {})
     try:
         r = subprocess.run(
             ["tmux", "display-message", "-p", "#S"],
@@ -26,7 +26,8 @@ def _resolve_sender_name(override: str = None, config: dict = None) -> str:
         )
         if r.returncode == 0 and r.stdout.strip():
             session = r.stdout.strip()
-            return aliases.get(session, session)
+            role = role_map.get(session, {})
+            return role.get("name", session)
     except Exception:
         pass
     return "notify-hermes"
