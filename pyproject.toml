@@ -1,7 +1,7 @@
 [project]
 name = "hermes-notify"
-version = "0.4.0"
-description = "Hermes notification toolkit — bus message sender, tmux notifier, bus-notifier daemon"
+version = "0.4.1"
+description = "Hermes notification toolkit — bus message sender, tmux notifier"
 readme = "README.md"
 license = {text = "MIT"}
 authors = [{name = "LinQuan", email = "i@linquan.name"}]
@@ -27,7 +27,6 @@ repository = "https://github.com/mlinquan/hermes-notify"
 [project.scripts]
 notify-hermes = "hermes_notify.notify_hermes:main"
 notify-agent = "hermes_notify.notify_agent:main"
-hermes-bus-notifier = "hermes_notify.bus_notifier:main"
 
 [tool.setuptools.packages.find]
 include = ["hermes_notify*"]
