@@ -1,0 +1,11 @@
+name: hermes-notify
+version: 1.0.0
+description: CLI notification tools for Hermes Agent — notify-hermes and notify-agent
+author: LinQuan
+
+provides_tools: []
+
+provides_hooks: []
+
+provides_skills:
+  - notify-cli

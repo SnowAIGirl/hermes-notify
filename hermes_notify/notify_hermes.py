@@ -58,6 +58,7 @@ def main():
     parser.add_argument("--socket", default=None, help="Custom socket path")
     parser.add_argument("--from", dest="from_ep", default=None, help="Override sender name")
     parser.add_argument("--type", default=None, help="Message type for callback matching")
+    parser.add_argument("--channel", default=None, help="Target channel name")
     parser.add_argument("--config", default=None, help="Path to bus-rules.yaml")
     args = parser.parse_args()
 
@@ -77,6 +78,9 @@ def main():
 
     if args.type:
         body["type"] = args.type
+
+    if args.channel:
+        body["channel"] = args.channel
 
     sender = _resolve_sender_name(args.from_ep, config)
 
