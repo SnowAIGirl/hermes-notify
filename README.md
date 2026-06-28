@@ -78,7 +78,7 @@ notify-hermes --to <endpoint> --body '{"text":"hello","key":"value"}'
 | `--body` | * | — | Full JSON body dict as a string. Mutually exclusive with positional message |
 | `--type` | no | none | Application-level message type (see table below) |
 | `--channel` | no | none | Reply routing token: `platform:chat_id` or `platform` (falls back to `*_HOME_CHANNEL` env var) |
-| `--from` | no | auto | Override sender name. Auto-detected from tmux session via `role_map` in `bus-rules.yaml` |
+| `--from` | no | auto (notify-hermes) / none (notify-agent) | Override sender name. `notify-hermes`: auto-detected from tmux session via `role_map`. `notify-agent`: omitted → no sender prefix; provided → `role_map` lookup |
 | `--socket` | no | auto | Custom Unix socket path. Default: `$HERMES_BUS_ROOT/hermes-bus.sock` |
 | `--config` | no | auto | Path to `bus-rules.yaml`. Default: `$HERMES_HOME/bus-rules.yaml` |
 
@@ -171,7 +171,7 @@ notify-agent [--from SENDER] [--to SESSION] <session> "message text"
 | Argument | Required | Description |
 |----------|----------|-------------|
 | `--to` | no | Target tmux session name (alternative to positional `<session>`) |
-| `--from` | no | Sender display name. Resolved through `role_map` if a session key is provided. Auto-detected from session name if omitted |
+| `--from` | no | Sender display name. `role_map` lookup if provided (unmatched → use `--from` value as-is). Omitted → no sender prefix |
 | `<session>` | yes* | Target tmux session name (positional, alternative to `--to`) |
 | `"message"` | yes | Plain text message (positional, last argument) |
 
@@ -179,12 +179,20 @@ notify-agent [--from SENDER] [--to SESSION] <session> "message text"
 
 ### Message Format
 
-Messages are formatted as `[{sender}]: {text}` where `{sender}` is resolved through `role_map`:
+Messages are formatted as `⚕ [{sender}]: {text}` where `{sender}` is resolved through `role_map` (unmatched → use `--from` value as-is):
 
 ```bash
 # If role_map has: worker-alpha: {name: "Alpha", ...}
 notify-agent --from worker-alpha --to lead-agent "Hello"
-# Sends: [Alpha]: Hello
+# Sends: ⚕ [Alpha]: Hello
+
+# If --from not in role_map
+notify-agent --from MyBot --to lead-agent "Hello"
+# Sends: ⚕ [MyBot]: Hello
+
+# If --from omitted
+notify-agent --to lead-agent "Hello"
+# Sends: Hello  (no sender prefix)
 ```
 
 ### Examples

@@ -1,6 +1,6 @@
 name: hermes-notify
-version: 1.0.0
-description: CLI notification tools for Hermes Agent — notify-hermes and notify-agent
+version: 0.8.1
+description: Hermes notification senders — notify-hermes (bus → Hermes agent) and notify-agent (Hermes agent → tmux)
 author: LinQuan
 
 provides_tools: []

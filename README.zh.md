@@ -78,7 +78,7 @@ notify-hermes --to <endpoint> --body '{"text":"hello","key":"value"}'
 | `--body` | * | — | 完整 JSON body 字符串。与位置参数互斥 |
 | `--type` | 否 | 无 | 应用层消息类型（见下表） |
 | `--channel` | 否 | 无 | 回复路由令牌：`platform:chat_id` 或 `platform`（回退到 `*_HOME_CHANNEL` 环境变量） |
-| `--from` | 否 | 自动 | 覆盖发送者名称。默认从 tmux session 通过 `bus-rules.yaml` 的 `role_map` 自动检测 |
+| `--from` | 否 | 自动（notify-hermes）/ 无（notify-agent） | 覆盖发送者名称。`notify-hermes`：从 tmux session 经 `role_map` 自动检测；`notify-agent`：省略则无前缀，传入则 `role_map` 解析 |
 | `--socket` | 否 | 自动 | 自定义 Unix socket 路径。默认：`$HERMES_BUS_ROOT/hermes-bus.sock` |
 | `--config` | 否 | 自动 | `bus-rules.yaml` 路径。默认：`$HERMES_HOME/bus-rules.yaml` |
 
@@ -171,7 +171,7 @@ notify-agent [--from 发送者] [--to 会话] <session> "消息文本"
 | 参数 | 必需 | 说明 |
 |------|------|------|
 | `--to` | 否 | 目标 tmux session 名称（位置参数 `<session>` 的替代写法） |
-| `--from` | 否 | 发送者显示名称。若传入 session key 会通过 `role_map` 解析；省略时从当前 session 自动检测 |
+| `--from` | 否 | 发送者显示名称。传入则 `role_map` 解析（未匹配用原值）；省略则**无发送者前缀**（纯消息） |
 | `<session>` | 是* | 目标 **tmux session 名称**（位置参数，`--to` 的替代写法） |
 | `"消息"` | 是 | 纯文本消息（位置参数，最后一个参数） |
 
@@ -179,12 +179,20 @@ notify-agent [--from 发送者] [--to 会话] <session> "消息文本"
 
 ### 消息格式
 
-消息格式为 `[{发送者}]: {文本}`，其中 `{发送者}` 通过 `role_map` 解析：
+消息格式为 `⚕ [{发送者}]: {文本}`，其中 `{发送者}` 通过 `role_map` 解析（未匹配用原值）：
 
 ```bash
 # 若 role_map 有: shiyinru: {name: "诗银茹", ...}
 notify-agent --from shiyinru --to snow "你好"
-# 发送内容: [诗银茹]: 你好
+# 发送内容: ⚕ [诗银茹]: 你好
+
+# 若 --from 不在 role_map 中
+notify-agent --from MyBot --to snow "你好"
+# 发送内容: ⚕ [MyBot]: 你好
+
+# 若省略 --from
+notify-agent --to snow "你好"
+# 发送内容: 你好  （无发送者前缀）
 ```
 
 ### 示例
